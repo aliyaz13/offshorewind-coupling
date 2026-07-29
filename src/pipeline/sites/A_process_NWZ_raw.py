@@ -886,7 +886,14 @@ export_df.drop(columns=[
     "chosen_E50ref (kPa)"
 ], inplace=True)
 
-export_df.rename(columns={"chosen_m": "E50ref_m_parameter (-)"}, inplace=True)
+export_df.rename(
+    columns={
+        "chosen_m": "E50ref_m_parameter (-)",
+        "borehole": "sampling_name (-)",
+        "depth": "depth (m)"
+    },
+    inplace=True
+)
 
 print("✅ PIPELINE COMPLETE")
 print("Final shape:", export_df.shape)
