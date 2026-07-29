@@ -1,0 +1,7 @@
+pandas>=2.0
+numpy>=1.24
+pyyaml>=6.0
+matplotlib>=3.7
+python-ags4>=0.5      # AGS4 borehole/CPT location files (stage B01)
+openpyxl>=3.1         # .xlsx lab files (stage A, NWZ/TNW)
+xlrd>=2.0             # legacy .xls lab files, if any
