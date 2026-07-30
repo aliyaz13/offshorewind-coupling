@@ -1,0 +1,1 @@
+1. There is a problem in HKW script to identify source_file and test_type. Update it.
