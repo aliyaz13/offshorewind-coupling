@@ -74,33 +74,36 @@ def get_nearest_cpt(row, cpt_df: pd.DataFrame, threshold: float = 0.40) -> pd.Se
     Prefers candidates that have BOTH qc and fs; otherwise falls back to the
     single nearest row within threshold.
 
-    Returns: [CPT_ID, qc (MPa), fs (kPa), Rf (%), u2 (kPa)]
+    Returns: [CPT_ID, qc (MPa), fs (kPa), Rf (%), u2 (kPa), CPT_depth (m)]
     """
+    idx = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)", "CPT_depth (m)"]
+
     bh_cpt = cpt_df[cpt_df["bh_id"] == row["bh_id"]].copy()
     if bh_cpt.empty or pd.isna(row["depth (m)"]):
-        return pd.Series([np.nan] * 5)
+        return pd.Series([np.nan] * 6, index=idx)
 
     bh_cpt["depth_diff"] = (bh_cpt["depth (m)"] - row["depth (m)"]).abs()
     if bh_cpt["depth_diff"].isna().all():
-        return pd.Series([np.nan] * 5)
+        return pd.Series([np.nan] * 6, index=idx)
 
     candidates = bh_cpt[bh_cpt["depth_diff"] <= threshold].copy()
     if candidates.empty:
-        return pd.Series([np.nan] * 5)
+        return pd.Series([np.nan] * 6, index=idx)
 
     complete = candidates[candidates["qc (MPa)"].notna() & candidates["fs (MPa)"].notna()]
     if not complete.empty:
         nearest = complete.loc[complete["depth_diff"].idxmin()]
     else:
         nearest = candidates.loc[candidates["depth_diff"].idxmin()]
-
+    
     return pd.Series([
         nearest["ID"],
         nearest["qc (MPa)"],
         nearest["fs (MPa)"] * 1000 if pd.notna(nearest["fs (MPa)"]) else np.nan,
         nearest["Rf (%)"],
         nearest["u2 (MPa)"] * 1000 if pd.notna(nearest["u2 (MPa)"]) else np.nan,
-    ])
+        nearest["depth (m)"],
+    ], index=idx)
 
 
 # ---------------------------------------------------------------------------
@@ -117,20 +120,22 @@ def get_nearest_cpt_refined(row, cpt_df: pd.DataFrame,
 
     Returns: [CPT_ID, qc (MPa), fs (kPa), Rf (%), u2 (kPa), CPT_depth (m)]
     """
+    idx = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)", "CPT_depth (m)"]
+
     bh_cpt = cpt_df[cpt_df["bh_id"] == row["bh_id"]].copy()
     if bh_cpt.empty or pd.isna(row["depth (m)"]):
-        return pd.Series([np.nan] * 6)
+        return pd.Series([np.nan] * 6, index=idx)
 
     bh_cpt["depth_diff"] = (bh_cpt["depth (m)"] - row["depth (m)"]).abs()
     candidates = bh_cpt[bh_cpt["depth_diff"] <= threshold].sort_values("depth_diff")
     if candidates.empty:
-        return pd.Series([np.nan] * 6)
+        return pd.Series([np.nan] * 6, index=idx)
 
     qc_values = candidates["qc (MPa)"].dropna()
     if len(qc_values) > 1:
         cv = qc_values.std() / qc_values.mean()
         if cv > cov_limit:
-            return pd.Series([np.nan] * 6)
+            return pd.Series([np.nan] * 6, index=idx)
 
     complete = candidates.dropna(subset=["qc (MPa)", "fs (MPa)"])
     if complete.empty:
@@ -144,4 +149,4 @@ def get_nearest_cpt_refined(row, cpt_df: pd.DataFrame,
         best["Rf (%)"],
         best["u2 (MPa)"] * 1000 if pd.notna(best["u2 (MPa)"]) else np.nan,
         best["depth (m)"],
-    ])
+    ], index=idx)

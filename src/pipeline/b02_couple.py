@@ -36,7 +36,8 @@ def couple(site: str, approach: str) -> pd.DataFrame:
     cpt["bh_id"] = cpt["ID"].apply(common.normalize_cpt_id)
 
     if approach == "Appr01":
-        cols = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)"]
+        # cols = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)"]
+        cols = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)", "CPT_depth (m)"]
         soil[cols] = soil.apply(
             common.get_nearest_cpt, axis=1, cpt_df=cpt,
             threshold=appr_cfg["threshold"],
@@ -58,16 +59,12 @@ def couple(site: str, approach: str) -> pd.DataFrame:
         how="left",
     )
     soil.drop(columns=["Borehole_ID", "bh_id"], inplace=True, errors="ignore")
-
-    if approach == "Appr02":
-        # derived, human-readable coupling-quality columns
-        soil["Vertical_Depth_Difference (m)"] = soil["CPT_depth (m)"] - soil["depth (m)"]
-        soil.rename(columns={"Distance_m": "CPT_to_BH_Distance (m)"}, inplace=True)
-    else:
-        soil.rename(columns={"Distance_m": "CPT_to_BH_Distance (m)"}, inplace=True)
-
     soil["site"] = site
     soil["coupling_approach"] = approach
+
+    # derived, human-readable coupling-quality columns
+    soil["Vertical_Depth_Difference (m)"] = soil["CPT_depth (m)"] - soil["depth (m)"]
+    soil.rename(columns={"Distance_m": "CPT_to_BH_Distance (m)"}, inplace=True)
     return soil
 
 
