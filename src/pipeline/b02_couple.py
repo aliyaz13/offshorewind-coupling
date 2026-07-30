@@ -36,7 +36,6 @@ def couple(site: str, approach: str) -> pd.DataFrame:
     cpt["bh_id"] = cpt["ID"].apply(common.normalize_cpt_id)
 
     if approach == "Appr01":
-        # cols = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)"]
         cols = ["CPT_ID", "qc (MPa)", "fs (kPa)", "Rf (%)", "u2 (kPa)", "CPT_depth (m)"]
         soil[cols] = soil.apply(
             common.get_nearest_cpt, axis=1, cpt_df=cpt,
