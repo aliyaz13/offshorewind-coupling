@@ -8,7 +8,7 @@ venv/
 data/03_lab_data_cleaned/*.csv
 data/04_proximity_cpt_lab/*.csv
 data/04_proximity_cpt_lab/*.png
-data/05_merge_cpt_lab/*.csv
+# data/05_merge_cpt_lab/*.csv
 
 # Keep the empty folders in git
 !data/**/.gitkeep
