@@ -42,6 +42,7 @@ offshorewind-coupling/
 ## Setup
 
 ```cmd
+cd "C:\Users\aliya\Documents\GitHub\offshorewind-coupling"
 python -m venv .venv
 .venv\Scripts\activate.bat
 pip install -r requirements.txt
