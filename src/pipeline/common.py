@@ -139,7 +139,7 @@ def get_nearest_cpt_refined(row, cpt_df: pd.DataFrame,
 
     complete = candidates.dropna(subset=["qc (MPa)", "fs (MPa)"])
     if complete.empty:
-        return pd.Series([np.nan] * 6)
+        return pd.Series([np.nan] * 6, index=idx)
     best = complete.iloc[0]
 
     return pd.Series([
